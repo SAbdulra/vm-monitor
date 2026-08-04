@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VM Monitor - Infrastructure Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2b2b2b 0%, #000 100%);
+            color: white;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header {
+            background: #000;
+            border-left: 5px solid #C8102E;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: #C8102E;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+        .company {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .company-name { font-size: 24px; font-weight: bold; }
+        .tagline { font-size: 12px; color: #999; }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            border-radius: 5px;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+        .status.error {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .stat-label { color: #999; font-size: 14px; margin-bottom: 8px; }
+        .stat-value { font-size: 36px; font-weight: bold; }
+        .vm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .vm-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+        .vm-card:hover { border-color: #C8102E; }
+        .vm-name { font-weight: bold; margin-bottom: 10px; }
+        .metric { font-size: 14px; color: #ccc; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">VM</div>
+            <div class="company">
+                <div class="company-name">VM MONITOR</div>
+                <div class="tagline">Infrastructure Monitor</div>
+            </div>
+            <span id="ws-status" class="status">Connecting...</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total VMs</div>
+                <div class="stat-value" id="total">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Online</div>
+                <div class="stat-value" id="online" style="color:#10b981">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg CPU</div>
+                <div class="stat-value" id="cpu">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Memory</div>
+                <div class="stat-value" id="mem">0%</div>
+            </div>
+        </div>
+
+        <div id="vms" class="vm-grid">Loading...</div>
+    </div>
+
+    <script>
+        console.log('CLEAN DASHBOARD - NO EXTERNAL DEPENDENCIES');
+
+        let vms = [];
+        let ws = null;
+
+        async function loadData() {
+            try {
+                const [vmsRes, statsRes] = await Promise.all([
+                    fetch('/api/vms'),
+                    fetch('/api/dashboard/stats')
+                ]);
+
+                const vmsData = await vmsRes.json();
+                const stats = await statsRes.json();
+
+                vms = vmsData.vms || [];
+
+                document.getElementById('total').textContent = stats.total_vms || 0;
+                document.getElementById('online').textContent = stats.online_vms || 0;
+                document.getElementById('cpu').textContent = (stats.avg_cpu || 0).toFixed(1) + '%';
+                document.getElementById('mem').textContent = (stats.avg_memory || 0).toFixed(1) + '%';
+
+                renderVMs();
+                console.log('Loaded', vms.length, 'VMs');
+            } catch(e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        function renderVMs() {
+            const grid = document.getElementById('vms');
+            if (!vms.length) {
+                grid.innerHTML = '<div>No VMs found</div>';
+                return;
+            }
+
+            grid.innerHTML = vms.map(vm => `
+                <div class="vm-card">
+                    <div class="vm-name">${vm.name || 'Unknown'}</div>
+                    <div class="metric">CPU: ${(vm.cpu_usage || 0).toFixed(1)}%</div>
+                    <div class="metric">Memory: ${(vm.memory_usage || 0).toFixed(1)}%</div>
+                    <div class="metric">Status: ${vm.status || 'unknown'}</div>
+                </div>
+            `).join('');
+        }
+
+        function connectWebSocket() {
+            const wsUrl = 'ws://' + window.location.host + '/ws/metrics';
+            console.log('Connecting WebSocket:', wsUrl);
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function() {
+                console.log('WebSocket connected');
+                document.getElementById('ws-status').textContent = 'Connected';
+                document.getElementById('ws-status').className = 'status';
+            };
+
+            ws.onmessage = function(event) {
+                try {
+                    const msg = JSON.parse(event.data);
+                    console.log('Update:', msg.data?.hostname);
+
+                    const hostname = msg.data?.hostname;
+                    const vmIndex = vms.findIndex(v => v.name === hostname);
+                    if (vmIndex !== -1) {
+                        vms[vmIndex] = {
+                            ...vms[vmIndex],
+                            cpu_usage: msg.data.cpu_usage || vms[vmIndex].cpu_usage,
+                            memory_usage: msg.data.memory_usage || vms[vmIndex].memory_usage,
+                            status: msg.data.status || vms[vmIndex].status
+                        };
+                        renderVMs();
+                    }
+                } catch(e) {
+                    console.error('Error parsing message:', e);
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                document.getElementById('ws-status').textContent = 'Error';
+                document.getElementById('ws-status').className = 'status error';
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket disconnected - reconnecting in 5s');
+                document.getElementById('ws-status').textContent = 'Disconnected';
+                document.getElementById('ws-status').className = 'status error';
+                setTimeout(connectWebSocket, 5000);
+            };
+        }
+
+        loadData();
+        connectWebSocket();
+    </script>
+</body>
+</html>
