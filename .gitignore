@@ -1,0 +1,96 @@
+# VM Monitor - Git Ignore File
+
+# ==================== Environment & Secrets ====================
+.env
+*.env
+.env.local
+.env.production
+*.key
+*.pem
+*.crt
+**/secrets/
+**/credentials/
+
+# ==================== Python ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.log
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# ==================== IDEs ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ==================== Docker ====================
+*.tar
+*.tar.gz
+docker-compose.override.yml
+
+# ==================== Logs ====================
+*.log
+logs/
+*.log.*
+
+# ==================== Database ====================
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+backups/
+*.dump
+
+# ==================== Temporary Files ====================
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+*.old
+
+# ==================== OS Files ====================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==================== Project Specific ====================
+# Nginx logs
+nginx/logs/
+
+# Collected facts
+facts/
+ansible_facts/
+
+# CVE data cache
+cve_cache/
+
+# Metrics logs
+metrics.log
+telegraf.log

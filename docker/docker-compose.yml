@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # ==================== REDIS CACHE ====================
+  redis:
+    image: redis:7-alpine
+    container_name: vm-monitor-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - monitor-network
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ==================== BACKEND (FASTAPI) ====================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: vm-monitor-backend:latest
+    container_name: vm-monitor-backend-1
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    networks:
+      - monitor-network
+    depends_on:
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/dashboard/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ==================== TELEGRAF PROCESSORS (3 workers) ====================
+  telegraf-processor-1:
+    build:
+      context: ./telegraf-processor
+      dockerfile: Dockerfile
+    image: vm-monitor-telegraf-processor:latest
+    container_name: vm-monitor-telegraf-processor-1
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=telegraf
+      - DB_PASSWORD=${TELEGRAF_PASSWORD}
+      - WORKER_ID=telegraf-processor-1
+    networks:
+      - monitor-network
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  telegraf-processor-2:
+    image: vm-monitor-telegraf-processor:latest
+    container_name: vm-monitor-telegraf-processor-2
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=telegraf
+      - DB_PASSWORD=${TELEGRAF_PASSWORD}
+      - WORKER_ID=telegraf-processor-2
+    networks:
+      - monitor-network
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  telegraf-processor-3:
+    image: vm-monitor-telegraf-processor:latest
+    container_name: vm-monitor-telegraf-processor-3
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=telegraf
+      - DB_PASSWORD=${TELEGRAF_PASSWORD}
+      - WORKER_ID=telegraf-processor-3
+    networks:
+      - monitor-network
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ==================== CVE DOWNLOADER (CRON) ====================
+  cve-downloader:
+    build:
+      context: ./cve-downloader
+      dockerfile: Dockerfile
+    image: vm-monitor-cve-downloader:latest
+    container_name: vm-monitor-cve-downloader
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CRON_SCHEDULE=${CRON_SCHEDULE:-0 2 * * *}
+    networks:
+      - monitor-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  monitor-network:
+    driver: bridge
+
+volumes:
+  redis-data:
