@@ -1,12 +1,37 @@
 # VM Monitor - Enterprise Infrastructure Monitoring Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green.svg)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Podman](https://img.shields.io/badge/Podman-Ready-892CA0.svg?logo=podman&logoColor=white)](https://podman.io/)
 [![GitHub Stars](https://img.shields.io/github/stars/SAbdulra/vm-monitor?style=social)](https://github.com/SAbdulra/vm-monitor)
-[![License](https://img.shields.io/github/license/SAbdulra/vm-monitor)](LICENSE)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![GitHub Forks](https://img.shields.io/github/forks/SAbdulra/vm-monitor?style=social)](https://github.com/SAbdulra/vm-monitor/fork)
+[![GitHub Issues](https://img.shields.io/github/issues/SAbdulra/vm-monitor)](https://github.com/SAbdulra/vm-monitor/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 > A containerized, real-time VM monitoring platform for enterprise Linux infrastructure with CVE vulnerability tracking.
+
+---
+
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Architecture](#-architecture)
+- [Quick Start](#-quick-start)
+- [Project Structure](#-project-structure)
+- [Configuration](#-configuration)
+- [API Documentation](#-api-documentation)
+- [Deployment](#-deployment)
+- [Performance](#-performance)
+- [Security](#-security)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Support](#-support)
+
+---
 
 ## 🌟 Features
 
@@ -18,6 +43,32 @@
 - **WebSocket Updates**: Live metrics without page refresh
 - **PostgreSQL Backend**: Robust data storage with connection pooling
 - **Redis Caching**: Optional performance optimization layer
+- **LDAP/AD Authentication**: Enterprise authentication support
+- **Security First**: JWT tokens, HTTPS, environment-based secrets
+
+---
+
+## 📸 Screenshots
+
+### Main Dashboard
+![Dashboard Overview](https://via.placeholder.com/800x450/2b2b2b/ffffff?text=VM+Monitor+Dashboard)
+*Real-time metrics for all monitored VMs with status indicators*
+
+### VM Details
+![VM Details](https://via.placeholder.com/800x450/2b2b2b/ffffff?text=VM+Details+View)
+*Detailed metrics and CVE vulnerabilities for individual VMs*
+
+### CVE Tracking
+![CVE Tracking](https://via.placeholder.com/800x450/2b2b2b/ffffff?text=CVE+Vulnerability+Tracking)
+*CVSS-scored vulnerabilities with affected VMs*
+
+> **Note**: Replace placeholder images with actual screenshots by adding images to `/docs/images/` directory:
+> ```bash
+> mkdir -p docs/images
+> # Add your screenshots and update image URLs above
+> ```
+
+---
 
 ## 📊 Architecture
 
@@ -57,7 +108,7 @@
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/vm-monitor.git
+git clone https://github.com/SAbdulra/vm-monitor.git
 cd vm-monitor
 ```
 
@@ -395,10 +446,12 @@ podman restart vm-monitor-backend-1
 
 ## 📚 Documentation
 
-- [Architecture Deep Dive](docs/ARCHITECTURE.md)
-- [API Reference](docs/API.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
+- 📖 [Architecture Deep Dive](docs/ARCHITECTURE.md) - Complete technical architecture and data flow
+- 🔌 [API Reference](docs/API.md) - REST API endpoints and WebSocket documentation
+- 🚀 [Quick Start Guide](QUICKSTART.md) - 10-minute deployment guide
+- 🔒 [Security Guidelines](SECURITY.md) - Security best practices and hardening
+- 📝 [Changelog](CHANGELOG.md) - Version history and upgrade guides
+- 🤝 [Contributing Guidelines](CONTRIBUTING.md) - How to contribute to the project
 
 ## 🤝 Contributing
 
@@ -425,8 +478,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/vm-monitor/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/vm-monitor/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/SAbdulra/vm-monitor/issues)
+- 💬 **Questions**: [GitHub Discussions](https://github.com/SAbdulra/vm-monitor/discussions)
+- 🔒 **Security**: See [SECURITY.md](SECURITY.md) for responsible disclosure
+- ⭐ **Feature Requests**: [Open an Issue](https://github.com/SAbdulra/vm-monitor/issues/new)
 
 ## 🗺️ Roadmap
 
