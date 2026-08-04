@@ -8,13 +8,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Email/Slack alerts for critical CVEs
-- Historical metrics charts
-- Multi-tenancy support
-- Prometheus exporter
-- Grafana dashboards
-- Ansible playbooks for deployment
-- Kubernetes manifests
+- Historical metrics charts with time-series visualization
+- Multi-tenancy support for enterprise deployments
+- Prometheus exporter for external monitoring
+- Grafana dashboard templates
+- Ansible playbooks for automated deployment
+- Kubernetes manifests and Helm charts
+- Mobile app for iOS/Android
+
+---
+
+## [1.1.0] - 2026-08-05
+
+### Added - Enhanced Dashboard UI
+- 🔍 **Real-time search** across VM hostnames
+- 🎯 **Smart filtering** (All, Online, Warning, Critical status)
+- 📊 **Multi-column sorting** (Name, CPU, Memory, Status)
+- 🎨 **Modern gradient UI** with improved aesthetics
+- 📱 **Fully responsive design** for mobile/tablet/desktop
+- 🔄 **Manual refresh button** + auto-refresh every 60s
+- 📈 **Visual metric bars** with color coding (Green/Yellow/Red)
+- 🛡️ **CVE severity badges** (Critical/High/Medium/Low)
+- ⚡ **Enhanced status indicators** with pulse animations
+- 🎯 **Status-based VM card borders** (color-coded by health)
+
+### Added - Alert & Notification System
+- 📧 **Email notifications** via SMTP
+  - HTML-formatted alert emails
+  - Support for Gmail, Office 365, SendGrid, AWS SES
+  - Multiple recipient support
+- 💬 **Slack notifications** via webhooks
+  - Color-coded messages by severity
+  - Rich formatted fields
+  - Automatic timestamps
+- 🚨 **4 Alert Types**:
+  1. VM Critical Resource Alerts (CPU/Memory/Disk thresholds)
+  2. VM Offline Detection (no metrics for 10+ min)
+  3. CVE Security Alerts (critical/high vulnerability detection)
+  4. System Startup Notifications
+- 🎯 **Smart alert features**:
+  - Alert cooldown (60 min) prevents spam
+  - Configurable thresholds for all metrics
+  - Severity-based routing
+  - Alert history tracking
+- 📝 **Comprehensive alert documentation** (ALERTS.md)
+
+### Added - Enhanced CVE Tracking
+- 🛡️ **CVE Analysis Engine**
+  - Per-VM vulnerability analysis
+  - Fleet-wide CVE reporting
+  - Risk scoring algorithm
+  - Severity categorization
+- 🔧 **Remediation Engine**
+  - Step-by-step remediation guides
+  - OS-specific patch commands (RHEL/Ubuntu/Alpine)
+  - Batch remediation script generation
+  - Timeline recommendations based on CVSS scores
+- 📊 **Advanced CVE Features**:
+  - Intelligent package-to-CVE matching
+  - Version comparison and range checking
+  - CPE (Common Platform Enumeration) parsing
+  - Risk score calculation per VM
+- 📈 **CVE Reports**:
+  - Top 5 most critical vulnerabilities per VM
+  - Most vulnerable VMs in fleet
+  - Widespread CVEs affecting multiple systems
+  - Package vulnerability hotspots
+- 📝 **CVE documentation** (CVE_TRACKING.md)
+
+### Changed
+- Updated dashboard from basic design to modern gradient UI
+- Improved WebSocket connection handling with auto-reconnect
+- Enhanced error messages and user feedback
+- Better mobile responsiveness across all pages
+
+### Technical
+- Added `notification_service.py` module
+- Added `cve_analyzer.py` module
+- Updated `requirements.txt` with `requests` library
+- 30+ new environment variables for configuration
+- Async notification sending
+- Type hints throughout new modules
 
 ---
 
