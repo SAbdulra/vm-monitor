@@ -43,21 +43,52 @@ echo -e "${YELLOW}First 10 affected VMs:${NC}"
 echo "$ZERO_VMS" | head -10
 echo ""
 
+# Function to determine correct FQDN from /etc/hosts
+get_vm_fqdn() {
+    local vm=$1
+    local fqdn=""
+
+    # Look up FQDN in /etc/hosts
+    # Format: IP_ADDRESS    FQDN    SHORT_NAME
+    fqdn=$(grep -w "${vm}" /etc/hosts 2>/dev/null | awk '{print $2}' | head -1)
+
+    # If not found in /etc/hosts, try common suffixes as fallback
+    if [ -z "$fqdn" ]; then
+        if [[ $vm =~ ^mx ]]; then
+            # mx servers: try .erp.maxim-ic.com first, then .maxim-ic.com
+            if ping -c 1 -W 2 "${vm}.erp.maxim-ic.com" &>/dev/null; then
+                fqdn="${vm}.erp.maxim-ic.com"
+            elif ping -c 1 -W 2 "${vm}.maxim-ic.com" &>/dev/null; then
+                fqdn="${vm}.maxim-ic.com"
+            fi
+        else
+            # Other servers: try .ad.analog.com
+            if ping -c 1 -W 2 "${vm}.ad.analog.com" &>/dev/null; then
+                fqdn="${vm}.ad.analog.com"
+            fi
+        fi
+    fi
+
+    echo "$fqdn"
+}
+
 # Function to check and fix a single VM
 fix_vm() {
     local vm=$1
-    local vm_fqdn="${vm}.ad.analog.com"
 
     echo -e "${BLUE}========================================${NC}"
     echo -e "${BLUE}Checking: ${vm}${NC}"
     echo -e "${BLUE}========================================${NC}"
 
-    # Test connectivity
-    if ! ping -c 1 -W 2 "${vm_fqdn}" &>/dev/null; then
-        echo -e "${RED}✗ Cannot ping ${vm_fqdn}${NC}"
+    # Determine correct FQDN
+    local vm_fqdn=$(get_vm_fqdn "$vm")
+
+    if [ -z "$vm_fqdn" ]; then
+        echo -e "${RED}✗ Cannot reach ${vm} (tried .ad.analog.com, .erp.maxim-ic.com, .maxim-ic.com)${NC}"
         return 1
     fi
-    echo -e "${GREEN}✓ VM is reachable${NC}"
+
+    echo -e "${GREEN}✓ VM is reachable at ${vm_fqdn}${NC}"
 
     # Check if Telegraf is installed
     if ! ssh -o ConnectTimeout=10 "${vm_fqdn}" "which telegraf" &>/dev/null; then
