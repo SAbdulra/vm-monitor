@@ -1,10 +1,11 @@
 # VM Monitor - Enterprise Infrastructure Monitoring Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 [![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-green.svg)](https://fastapi.tiangolo.com/)
-
+[![GitHub Stars](https://img.shields.io/github/stars/SAbdulra/vm-monitor?style=social)](https://github.com/SAbdulra/vm-monitor)
+[![License](https://img.shields.io/github/license/SAbdulra/vm-monitor)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 > A containerized, real-time VM monitoring platform for enterprise Linux infrastructure with CVE vulnerability tracking.
 
 ## 🌟 Features
