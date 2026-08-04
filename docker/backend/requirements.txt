@@ -22,3 +22,7 @@ redis==5.0.1
 
 # Utilities
 python-dotenv==1.0.0
+requests==2.31.0
+
+# Notifications (for alert system)
+# Note: smtplib is built-in to Python, no package needed
