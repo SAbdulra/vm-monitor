@@ -8,13 +8,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Historical metrics charts with time-series visualization
 - Multi-tenancy support for enterprise deployments
 - Prometheus exporter for external monitoring
 - Grafana dashboard templates
 - Ansible playbooks for automated deployment
 - Kubernetes manifests and Helm charts
 - Mobile app for iOS/Android
+- Anomaly detection with ML
+- Capacity planning recommendations
+
+---
+
+## [1.2.0] - 2026-08-05
+
+### Added - Historical Data & Time-Series Charts
+- 📊 **Time-Series Database**
+  - Partitioned `vm_metrics_history` table for efficient storage
+  - Automatic metric archiving via triggers
+  - 90-day default retention (configurable)
+  - Hourly and daily aggregated views
+- 📈 **Interactive Charts**
+  - Chart.js powered visualizations
+  - CPU, Memory, and Disk usage over time
+  - Multiple time ranges (1h, 6h, 24h, 7d, 30d, 90d)
+  - Auto-selected aggregation intervals
+  - Min/Max/Average trend lines
+- 📊 **Historical Data API**
+  - Per-VM metrics history endpoint
+  - Fleet-wide aggregated metrics
+  - Statistical analysis (mean, median, p95, p99)
+  - Top resource consumers ranking
+- 🎯 **Advanced Features**:
+  - Automatic data aggregation by time interval
+  - Materialized views for performance
+  - Data retention policy with auto-cleanup
+  - Statistical analysis (stddev, percentiles)
+- 📱 **Dedicated Charts Page**
+  - Clean, focused visualization interface
+  - VM selector dropdown
+  - Time range selector
+  - Real-time statistics display
+  - Responsive chart layouts
+
+### Added - Data Management
+- 🗄️ **Database Schema**
+  - Table partitioning by month
+  - Efficient indexes for time-range queries
+  - Automatic partition management
+  - Materialized views for aggregates
+- 🔄 **Data Lifecycle**
+  - Automatic metric archiving trigger
+  - Configurable retention policy (default 90 days)
+  - Scheduled cleanup function
+  - Aggregate view refresh
+- 📊 **Aggregation Levels**
+  - Raw data (60-second intervals)
+  - 1-minute aggregates
+  - 5-minute aggregates
+  - 15-minute aggregates
+  - Hourly aggregates
+  - Daily aggregates
+
+### Changed
+- Added automatic time-series data collection
+- Enhanced database with historical tables
+- Improved performance with materialized views
+
+### Technical
+- Added `historical_data.py` service module
+- Created `database/historical_metrics.sql` schema
+- Added `frontend/static/charts.html` visualization
+- Chart.js 4.4.0 integration
+- PostgreSQL partitioning for scalability
+- Materialized views for aggregate queries
 
 ---
 
