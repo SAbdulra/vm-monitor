@@ -6,27 +6,31 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #2b2b2b 0%, #000 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%);
             color: white;
             padding: 20px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        /* Header */
         .header {
-            background: #000;
-            border-left: 5px solid #C8102E;
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 100%);
+            border-left: 5px solid #00d4ff;
             padding: 20px;
             margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .logo {
             width: 50px;
             height: 50px;
-            background: #C8102E;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 20px;
             font-weight: bold;
             margin-right: 15px;
             vertical-align: middle;
@@ -35,7 +39,13 @@
             display: inline-block;
             vertical-align: middle;
         }
-        .company-name { font-size: 24px; font-weight: bold; }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .tagline { font-size: 12px; color: #999; }
         .status {
             display: inline-block;
@@ -45,59 +55,262 @@
             border-radius: 5px;
             margin-left: 20px;
             font-size: 14px;
+            animation: pulse 2s infinite;
         }
         .status.error {
             background: rgba(239, 68, 68, 0.2);
             border-color: rgba(239, 68, 68, 0.5);
         }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Controls Bar */
+        .controls {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        .filter-group {
+            display: flex;
+            gap: 10px;
+        }
+        .filter-btn, .sort-btn {
+            padding: 10px 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 5px;
+            color: #00d4ff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .sort-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .filter-btn.active {
+            background: #00d4ff;
+            color: #000;
+            font-weight: bold;
+        }
+        select {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Stats Cards */
         .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 153, 204, 0.1) 100%);
             padding: 20px;
             border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 212, 255, 0.3);
         }
         .stat-label { color: #999; font-size: 14px; margin-bottom: 8px; }
         .stat-value { font-size: 36px; font-weight: bold; }
+        .stat-card.warning .stat-value { color: #fbbf24; }
+        .stat-card.critical .stat-value { color: #ef4444; }
+        .stat-card.success .stat-value { color: #10b981; }
+
+        /* VM Grid */
         .vm-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 15px;
         }
         .vm-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             padding: 15px;
             border-radius: 8px;
             border: 2px solid transparent;
+            transition: all 0.3s;
+            position: relative;
         }
-        .vm-card:hover { border-color: #C8102E; }
-        .vm-name { font-weight: bold; margin-bottom: 10px; }
-        .metric { font-size: 14px; color: #ccc; margin: 5px 0; }
+        .vm-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 212, 255, 0.2);
+        }
+        .vm-card.online { border-left: 4px solid #10b981; }
+        .vm-card.warning { border-left: 4px solid #fbbf24; }
+        .vm-card.critical { border-left: 4px solid #ef4444; }
+
+        .vm-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #00d4ff;
+        }
+        .vm-status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+        .vm-status-badge.online { background: #10b981; color: #000; }
+        .vm-status-badge.warning { background: #fbbf24; color: #000; }
+        .vm-status-badge.critical { background: #ef4444; color: #fff; }
+
+        .metric {
+            font-size: 14px;
+            color: #ccc;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .metric-label { color: #999; }
+        .metric-value { font-weight: bold; }
+        .metric-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 3px;
+            overflow: hidden;
+        }
+        .metric-bar-fill {
+            height: 100%;
+            transition: width 0.5s;
+            border-radius: 3px;
+        }
+        .metric-bar-fill.low { background: #10b981; }
+        .metric-bar-fill.medium { background: #fbbf24; }
+        .metric-bar-fill.high { background: #ef4444; }
+
+        .cve-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 5px 5px 0 0;
+        }
+        .cve-badge.critical { background: #ef4444; }
+        .cve-badge.high { background: #fb923c; }
+        .cve-badge.medium { background: #fbbf24; }
+        .cve-badge.low { background: #a3a3a3; }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .vm-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .search-box {
+                min-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">VM</div>
+            <div class="logo">🖥️</div>
             <div class="company">
                 <div class="company-name">VM MONITOR</div>
-                <div class="tagline">Infrastructure Monitor</div>
+                <div class="tagline">Real-time Infrastructure Monitoring</div>
             </div>
             <span id="ws-status" class="status">Connecting...</span>
         </div>
 
+        <!-- Controls Bar -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Search VMs by hostname..." />
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="online">Online</button>
+                <button class="filter-btn" data-filter="warning">Warning</button>
+                <button class="filter-btn" data-filter="critical">Critical</button>
+            </div>
+            <select id="sort">
+                <option value="name">Sort by Name</option>
+                <option value="cpu">Sort by CPU</option>
+                <option value="memory">Sort by Memory</option>
+                <option value="status">Sort by Status</option>
+            </select>
+            <button class="sort-btn" id="refresh">↻ Refresh</button>
+        </div>
+
+        <!-- Stats -->
         <div class="stats">
-            <div class="stat-card">
+            <div class="stat-card success">
                 <div class="stat-label">Total VMs</div>
                 <div class="stat-value" id="total">0</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card success">
                 <div class="stat-label">Online</div>
-                <div class="stat-value" id="online" style="color:#10b981">0</div>
+                <div class="stat-value" id="online">0</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Warning</div>
+                <div class="stat-value" id="warning">0</div>
+            </div>
+            <div class="stat-card critical">
+                <div class="stat-label">Critical</div>
+                <div class="stat-value" id="critical">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Avg CPU</div>
@@ -109,15 +322,20 @@
             </div>
         </div>
 
-        <div id="vms" class="vm-grid">Loading...</div>
+        <!-- VM Grid -->
+        <div id="vms" class="vm-grid">
+            <div class="loading">Loading VMs...</div>
+        </div>
     </div>
 
     <script>
-        console.log('CLEAN DASHBOARD - NO EXTERNAL DEPENDENCIES');
-
         let vms = [];
+        let filteredVMs = [];
         let ws = null;
+        let currentFilter = 'all';
+        let currentSort = 'name';
 
+        // Load initial data
         async function loadData() {
             try {
                 const [vmsRes, statsRes] = await Promise.all([
@@ -129,85 +347,214 @@
                 const stats = await statsRes.json();
 
                 vms = vmsData.vms || [];
-
-                document.getElementById('total').textContent = stats.total_vms || 0;
-                document.getElementById('online').textContent = stats.online_vms || 0;
-                document.getElementById('cpu').textContent = (stats.avg_cpu || 0).toFixed(1) + '%';
-                document.getElementById('mem').textContent = (stats.avg_memory || 0).toFixed(1) + '%';
-
-                renderVMs();
-                console.log('Loaded', vms.length, 'VMs');
+                updateStats(stats);
+                applyFiltersAndSort();
+                console.log('✓ Loaded', vms.length, 'VMs');
             } catch(e) {
-                console.error('Error loading data:', e);
+                console.error('✗ Error loading data:', e);
+                document.getElementById('vms').innerHTML =
+                    '<div class="loading" style="color:#ef4444;">Error loading VMs. Please check backend connection.</div>';
             }
         }
 
+        // Update statistics
+        function updateStats(stats) {
+            document.getElementById('total').textContent = stats.total_vms || 0;
+            document.getElementById('online').textContent = stats.online_vms || 0;
+            document.getElementById('warning').textContent = stats.warning_vms || 0;
+            document.getElementById('critical').textContent = stats.critical_vms || 0;
+            document.getElementById('cpu').textContent = (stats.avg_cpu || 0).toFixed(1) + '%';
+            document.getElementById('mem').textContent = (stats.avg_memory || 0).toFixed(1) + '%';
+        }
+
+        // Determine VM status based on metrics
+        function getVMStatus(vm) {
+            const cpu = vm.cpu_usage || 0;
+            const mem = vm.memory_usage || 0;
+            const disk = vm.disk_usage || 0;
+
+            if (cpu > 90 || mem > 90 || disk > 90) return 'critical';
+            if (cpu > 80 || mem > 80 || disk > 80) return 'warning';
+            return 'online';
+        }
+
+        // Get metric bar color
+        function getMetricColor(value) {
+            if (value > 80) return 'high';
+            if (value > 60) return 'medium';
+            return 'low';
+        }
+
+        // Render VMs
         function renderVMs() {
             const grid = document.getElementById('vms');
-            if (!vms.length) {
-                grid.innerHTML = '<div>No VMs found</div>';
+
+            if (!filteredVMs.length) {
+                grid.innerHTML = '<div class="loading">No VMs match your filters</div>';
                 return;
             }
 
-            grid.innerHTML = vms.map(vm => `
-                <div class="vm-card">
-                    <div class="vm-name">${vm.name || 'Unknown'}</div>
-                    <div class="metric">CPU: ${(vm.cpu_usage || 0).toFixed(1)}%</div>
-                    <div class="metric">Memory: ${(vm.memory_usage || 0).toFixed(1)}%</div>
-                    <div class="metric">Status: ${vm.status || 'unknown'}</div>
-                </div>
-            `).join('');
+            grid.innerHTML = filteredVMs.map(vm => {
+                const status = vm.status || getVMStatus(vm);
+                const cpu = vm.cpu_usage || 0;
+                const mem = vm.memory_usage || 0;
+                const disk = vm.disk_usage || 0;
+
+                return `
+                    <div class="vm-card ${status}">
+                        <div class="vm-name">
+                            ${vm.name || vm.hostname || 'Unknown'}
+                            <span class="vm-status-badge ${status}">${status}</span>
+                        </div>
+
+                        <div class="metric">
+                            <span class="metric-label">CPU</span>
+                            <span class="metric-value">${cpu.toFixed(1)}%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill ${getMetricColor(cpu)}" style="width: ${cpu}%"></div>
+                        </div>
+
+                        <div class="metric">
+                            <span class="metric-label">Memory</span>
+                            <span class="metric-value">${mem.toFixed(1)}%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill ${getMetricColor(mem)}" style="width: ${mem}%"></div>
+                        </div>
+
+                        <div class="metric">
+                            <span class="metric-label">Disk</span>
+                            <span class="metric-value">${disk.toFixed(1)}%</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div class="metric-bar-fill ${getMetricColor(disk)}" style="width: ${disk}%"></div>
+                        </div>
+
+                        ${vm.cves ? `
+                            <div style="margin-top: 10px;">
+                                ${vm.cves.critical > 0 ? `<span class="cve-badge critical">${vm.cves.critical} Critical</span>` : ''}
+                                ${vm.cves.high > 0 ? `<span class="cve-badge high">${vm.cves.high} High</span>` : ''}
+                                ${vm.cves.medium > 0 ? `<span class="cve-badge medium">${vm.cves.medium} Medium</span>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
+        // Apply filters and sorting
+        function applyFiltersAndSort() {
+            // Apply filter
+            filteredVMs = vms.filter(vm => {
+                const status = vm.status || getVMStatus(vm);
+                if (currentFilter !== 'all' && status !== currentFilter) return false;
+
+                // Search filter
+                const searchTerm = document.getElementById('search').value.toLowerCase();
+                if (searchTerm) {
+                    const hostname = (vm.name || vm.hostname || '').toLowerCase();
+                    return hostname.includes(searchTerm);
+                }
+                return true;
+            });
+
+            // Apply sort
+            filteredVMs.sort((a, b) => {
+                switch(currentSort) {
+                    case 'cpu':
+                        return (b.cpu_usage || 0) - (a.cpu_usage || 0);
+                    case 'memory':
+                        return (b.memory_usage || 0) - (a.memory_usage || 0);
+                    case 'status':
+                        const statusOrder = {critical: 0, warning: 1, online: 2};
+                        return statusOrder[getVMStatus(a)] - statusOrder[getVMStatus(b)];
+                    case 'name':
+                    default:
+                        return (a.name || a.hostname || '').localeCompare(b.name || b.hostname || '');
+                }
+            });
+
+            renderVMs();
+        }
+
+        // WebSocket connection
         function connectWebSocket() {
-            const wsUrl = 'ws://' + window.location.host + '/ws/metrics';
-            console.log('Connecting WebSocket:', wsUrl);
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = protocol + '//' + window.location.host + '/ws/metrics';
+            console.log('→ Connecting WebSocket:', wsUrl);
 
             ws = new WebSocket(wsUrl);
 
             ws.onopen = function() {
-                console.log('WebSocket connected');
-                document.getElementById('ws-status').textContent = 'Connected';
+                console.log('✓ WebSocket connected');
+                document.getElementById('ws-status').textContent = 'Live';
                 document.getElementById('ws-status').className = 'status';
             };
 
             ws.onmessage = function(event) {
                 try {
                     const msg = JSON.parse(event.data);
-                    console.log('Update:', msg.data?.hostname);
-
                     const hostname = msg.data?.hostname;
-                    const vmIndex = vms.findIndex(v => v.name === hostname);
+
+                    const vmIndex = vms.findIndex(v =>
+                        (v.name === hostname) || (v.hostname === hostname)
+                    );
+
                     if (vmIndex !== -1) {
                         vms[vmIndex] = {
                             ...vms[vmIndex],
-                            cpu_usage: msg.data.cpu_usage || vms[vmIndex].cpu_usage,
-                            memory_usage: msg.data.memory_usage || vms[vmIndex].memory_usage,
-                            status: msg.data.status || vms[vmIndex].status
+                            cpu_usage: msg.data.cpu_usage ?? vms[vmIndex].cpu_usage,
+                            memory_usage: msg.data.memory_usage ?? vms[vmIndex].memory_usage,
+                            disk_usage: msg.data.disk_usage ?? vms[vmIndex].disk_usage,
+                            status: msg.data.status ?? getVMStatus(vms[vmIndex])
                         };
-                        renderVMs();
+                        applyFiltersAndSort();
                     }
                 } catch(e) {
-                    console.error('Error parsing message:', e);
+                    console.error('✗ Error parsing WebSocket message:', e);
                 }
             };
 
             ws.onerror = function(error) {
-                console.error('WebSocket error:', error);
+                console.error('✗ WebSocket error:', error);
                 document.getElementById('ws-status').textContent = 'Error';
                 document.getElementById('ws-status').className = 'status error';
             };
 
             ws.onclose = function() {
-                console.log('WebSocket disconnected - reconnecting in 5s');
-                document.getElementById('ws-status').textContent = 'Disconnected';
+                console.log('○ WebSocket disconnected - reconnecting in 5s');
+                document.getElementById('ws-status').textContent = 'Reconnecting...';
                 document.getElementById('ws-status').className = 'status error';
                 setTimeout(connectWebSocket, 5000);
             };
         }
 
+        // Event listeners
+        document.getElementById('search').addEventListener('input', applyFiltersAndSort);
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                applyFiltersAndSort();
+            });
+        });
+
+        document.getElementById('sort').addEventListener('change', function() {
+            currentSort = this.value;
+            applyFiltersAndSort();
+        });
+
+        document.getElementById('refresh').addEventListener('click', loadData);
+
+        // Initialize
         loadData();
         connectWebSocket();
+
+        // Auto-refresh stats every 60 seconds
+        setInterval(loadData, 60000);
     </script>
 </body>
 </html>
