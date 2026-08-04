@@ -19,6 +19,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-08-05
+
+### Added - Zero-Metric Detection & Remediation
+- 🔍 **Automated Zero-Metric Detection**
+  - Background monitoring service checks for VMs reporting 0.0 for all metrics
+  - Configurable check interval (default: 5 minutes)
+  - Smart threshold-based alerting (default: 3 consecutive checks)
+  - Tracks alert history to prevent spam
+  - API endpoint: `GET /api/monitoring/zero-metrics`
+
+- 🚨 **Automatic Alerting**
+  - Email notifications for zero-metric VMs
+  - Slack webhook notifications
+  - Detailed diagnostic information in alerts
+  - Suggested remediation steps included
+  - Cooldown period prevents alert fatigue
+
+- 🛠️ **Automated Fix Script** (`fix_zero_metrics.sh`)
+  - Automatically identifies affected VMs from API
+  - Interactive menu: single VM, all VMs, or batch testing
+  - Comprehensive diagnostics per VM:
+    - Network connectivity check
+    - Telegraf installation verification
+    - Service status validation
+    - Configuration audit (input plugins)
+    - Metric collection testing
+  - Automatic remediation:
+    - Installs Telegraf if missing
+    - Starts/enables Telegraf service
+    - Restarts Telegraf
+    - Reports configuration issues
+  - Success/failure tracking with detailed logs
+  - Export affected VM list for manual review
+
+- 📚 **Comprehensive Documentation** (`TROUBLESHOOTING_ZERO_METRICS.md`)
+  - Complete troubleshooting guide (30+ pages)
+  - Detection methods (API, dashboard, database)
+  - 8-step manual troubleshooting workflow
+  - Common error messages with solutions
+  - Advanced debugging techniques
+  - Quick reference table
+  - Prevention best practices
+  - Automated check examples
+
+### Added - Configuration
+- 3 new environment variables:
+  - `ZERO_METRIC_MONITORING_ENABLED` - Enable/disable monitoring (default: true)
+  - `ZERO_METRIC_CHECK_INTERVAL` - Check frequency in seconds (default: 300)
+  - `ZERO_METRIC_THRESHOLD` - Consecutive checks before alert (default: 3)
+
+### Added - Backend Features
+- New `zero_metric_monitor.py` service module
+  - `ZeroMetricMonitor` class with async monitoring
+  - `find_zero_metric_vms()` - Query VMs with all zeros
+  - `check_and_alert()` - Detection and notification logic
+  - `start_monitoring()` - Background monitoring loop
+  - `get_zero_metric_report()` - Status report API
+  - Integration with existing notification service
+
+### Changed
+- Updated `postgres_backend.py` to initialize zero-metric monitor on startup
+- Enhanced `.env.example` with zero-metric configuration section
+- Background monitoring task runs automatically when enabled
+
+### Technical
+- Zero-metric detection uses SQL query for efficiency
+- Tracks consecutive occurrences per VM with in-memory counters
+- Prevents duplicate alerts with hostname tracking
+- Integrates with existing email and Slack notification system
+- Non-blocking async monitoring loop
+- Graceful degradation if notification service unavailable
+
+### Impact
+- **Reliability**: Proactively detects broken Telegraf agents
+- **Operations**: Reduces MTTR (Mean Time To Resolution) for metric collection issues
+- **Visibility**: Alerts ops team immediately when VMs stop reporting accurate metrics
+- **Automation**: Fix script can remediate 40+ VMs in ~20 minutes
+
+### Why This Matters
+In production, we discovered 40+ VMs reporting 0.0 for all metrics, causing:
+- Inaccurate capacity planning
+- Missed resource exhaustion warnings
+- False "healthy" status on dashboard
+- Wasted time manually identifying affected systems
+
+This release automates detection, alerting, and remediation of this critical issue.
+
+---
+
 ## [1.2.0] - 2026-08-05
 
 ### Added - Historical Data & Time-Series Charts

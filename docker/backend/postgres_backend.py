@@ -19,6 +19,10 @@ from pydantic import BaseModel
 # Import LDAP authentication
 from ldap_auth import authenticate_user, create_token, verify_token
 
+# Import notification service and zero-metric monitor
+notification_service = None
+zero_metric_monitor = None
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -142,8 +146,33 @@ async def listen_for_notifications():
 @app.on_event("startup")
 async def startup_event():
     """Initialize on startup"""
+    global notification_service, zero_metric_monitor
+
     await get_db_pool()
     asyncio.create_task(listen_for_notifications())
+
+    # Initialize notification service
+    try:
+        from notification_service import NotificationService
+        notification_service = NotificationService()
+        logger.info("✓ Notification service initialized")
+    except Exception as e:
+        logger.warning(f"⚠ Notification service not available: {e}")
+
+    # Initialize zero-metric monitor
+    try:
+        from zero_metric_monitor import ZeroMetricMonitor
+        zero_metric_monitor = ZeroMetricMonitor(db_pool, notification_service)
+
+        # Start monitoring in background if enabled
+        if os.getenv('ZERO_METRIC_MONITORING_ENABLED', 'true').lower() == 'true':
+            asyncio.create_task(zero_metric_monitor.start_monitoring())
+            logger.info("✓ Zero-metric monitoring started")
+        else:
+            logger.info("ℹ Zero-metric monitoring disabled")
+    except Exception as e:
+        logger.warning(f"⚠ Zero-metric monitor not available: {e}")
+
     logger.info("🚀 FastAPI server started with LDAP authentication")
 
 # Shutdown event
@@ -979,6 +1008,21 @@ async def receive_vm_report(request: Request):
                          disk.get('avail_gb'), disk.get('use_pct'))
         
         return {'status': 'success', 'hostname': hostname}
-        
+
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
+
+
+# Zero-Metric Monitoring API
+@app.get("/api/monitoring/zero-metrics")
+async def get_zero_metrics_report():
+    """Get report of VMs with zero metrics"""
+    try:
+        if not zero_metric_monitor:
+            raise HTTPException(status_code=503, detail="Zero-metric monitoring not enabled")
+
+        report = await zero_metric_monitor.get_zero_metric_report()
+        return report
+    except Exception as e:
+        logger.error(f"Error getting zero-metrics report: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
